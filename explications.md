@@ -116,12 +116,18 @@ def apply_boundary_conditions(self):
 
 ## Méthode implicite
 Le méthode implicite est décrite de la manière suivante: 
+
 $$\phi^{n+1} = \phi^n + \Delta t \cdot R (\phi^{n+1})$$
 Comme précédemment,
+
 $$R(\phi^{n+1})=(D-C) \cdot \phi^{n+1}= K \cdot \phi^{n+1}$$
+
 On obtient alors
+
 $$\phi^{n+1} = \phi^n + \Delta t \cdot K\phi^{n+1}$$
+
 En mettant $\phi^{n+1}$ en évidence,
+
 $$\phi^n = \phi^{n+1} [I-K\Delta t]=A\phi^{n+1}$$
 
 Avant d'entrer dans la boucle de résolution, les conditions limites sont appliquées à la matrice **A** à par la méthode `replace_rows_A_matrix()`. On résoud alors $A \phi^{n+1}=\phi^n$ pour trouver $\phi^{n+1}$, $\phi^{n}$ étant connu. Dans la boucle de résolution les conditions limites sont imposées au vecteur $\phi^n$ avant chaque pas à l'aide de la méthode `replace_b()` afin de bien respecter les conditions imposées.
