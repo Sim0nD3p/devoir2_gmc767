@@ -30,6 +30,8 @@ La paroi est est une frontière de type ***outlet***. Donc une condition de type
 $$\frac{\partial \phi}{\partial x} = 0$$
 
 
+modification
+
 
 
 <div align=center>
