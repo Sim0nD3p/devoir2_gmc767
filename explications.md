@@ -119,7 +119,7 @@ Le méthode implicite est décrite de la manière suivante:
 
 $$\phi^{n+1} = \phi^n + \Delta t \cdot R (\phi^{n+1})$$
 Comme précédemment,
-
+dsadsadsa
 $$R(\phi^{n+1})=(D-C) \cdot \phi^{n+1}= K \cdot \phi^{n+1}$$
 
 On obtient alors
