@@ -53,12 +53,47 @@ Pour simplifier le code, la discrétisation est traitée ainsi:
 $$\frac{u}{2\Delta x}(\phi_{i+1} - \phi_{i-1})$$
 
 ### Terme diffusif
-# à faire
+$$ D=\frac{\Gamma }{\rho}(\nabla^2 \phi)= \frac{\Gamma }{\rho} \left( \frac{\partial ^2\phi}{\partial x^2} + \frac{\partial ^2\phi}{\partial y^2} \right) $$
+
+En discrétisant pour x, on obtient: 
+
+$$\frac{\partial ^2\phi}{\partial x^2}=\frac{\phi_{i+1}-2.\phi_i+\phi_{i-1}}{2\Delta x} $$
+
+Ce qui done pour le code:
+
+$$\frac{\Gamma }{\rho.2\Delta x}(\phi_{i+1}-2.\phi_i+\phi_{i-1}) $$
 
 ## Terme résiduel
 $$R(\phi^n) = \frac{\partial\phi^n}{\partial t} = -\vec{U}\cdot\nabla\phi^n + \frac{\Gamma}{\rho}(\nabla^2\phi^n)$$
 
-### Terme diffusif
+## Condition initiale discrétisés
+
+### Paroi Nord
+
+$$\phi (x,y=1)=0 \quad \Rightarrow \quad \phi_{i,N_y} =0$$
+
+### Paroi Sud
+Nous avons vu que c'était une condition de Neumann de type $\frac{\partial \phi}{\partial y} \vert_{y=0}=0$
+
+On peut calculer la derivé partiel à la frontière $y=0$ avec un schéma forward d'orde 2:
+
+$$\frac{\partial \phi}{\partial y} \vert_{y=0}=\frac{-3\phi_{i,1}+4\phi_{i,2}-\phi_{i,3}}{2\Delta y}=0 \quad \Rightarrow \quad -3\phi_{i,1}+4\phi_{i,2}-\phi_{i,3} =0$$
+
+D'où: $$ \quad \phi_{i,1}=\frac{4\phi_{i,2}-\phi_{i,3}}{3} $$
+
+### Paroi Ouest
+
+$$\phi (x=0,y)=1-y \quad \Rightarrow \quad \phi_{0,j} =1-y_j$$
+
+### Paroi Est
+
+Pour la même raison que pour la paroie sud, on calcul la dérivé partiel à la frontière $x=L$ avec un schéma forward d'ordre 2, ce qui donne:
+
+
+$$\frac{\partial \phi}{\partial x} \vert_{x=L}=\frac{3\phi_{N,j}-4\phi_{N-1,j}+\phi_{N-2,j}}{2\Delta x}=0 \quad \Rightarrow \quad 3\phi_{N,j}-4\phi_{N-1,j}+\phi_{N-2,j} =0$$
+
+D'où: $$  \phi_{N,j}=\frac{4\phi_{N-1,j}-\phi_{N-2,j}}{3} $$
+
 
 ## Algorithme explicite et implicite
 
