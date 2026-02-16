@@ -61,38 +61,62 @@ $$\frac{\partial ^2\phi}{\partial x^2}=\frac{\phi_{i+1}-2.\phi_i+\phi_{i-1}}{2\D
 
 Ce qui done pour le code:
 
-$$\frac{\Gamma }{\rho.2\Delta x}(\phi_{i+1}-2.\phi_i+\phi_{i-1}) $$
+$$\frac{\Gamma }{\rho \cdot 2\Delta x}(\phi_{i+1}-2\phi_i+\phi_{i-1}) $$
 
 ## Terme résiduel
 $$R(\phi^n) = \frac{\partial\phi^n}{\partial t} = -\vec{U}\cdot\nabla\phi^n + \frac{\Gamma}{\rho}(\nabla^2\phi^n)$$
 
-## Condition initiale discrétisés
+## Discrétisation des conditions frontières
 
 ### Paroi Nord
 
 $$\phi (x,y=1)=0 \quad \Rightarrow \quad \phi_{i,N_y} =0$$
 
 ### Paroi Sud
-Nous avons vu que c'était une condition de Neumann de type $\frac{\partial \phi}{\partial y} \vert_{y=0}=0$
+Condition de type Neumann: $\frac{\partial \phi}{\partial y} \vert_{y=0}=0$
 
-On peut calculer la derivé partiel à la frontière $y=0$ avec un schéma forward d'orde 2:
+On utilise le schéma de discrétisation d'ordre 2 *forward* pour obetnir la dérivée à la frontière $y=0$
 
 $$\frac{\partial \phi}{\partial y} \vert_{y=0}=\frac{-3\phi_{i,1}+4\phi_{i,2}-\phi_{i,3}}{2\Delta y}=0 \quad \Rightarrow \quad -3\phi_{i,1}+4\phi_{i,2}-\phi_{i,3} =0$$
 
-D'où: $$ \quad \phi_{i,1}=\frac{4\phi_{i,2}-\phi_{i,3}}{3} $$
+On obtient alors $\phi$ à la frontière: $$ \quad \phi_{i,1}=\frac{4\phi_{i,2}-\phi_{i,3}}{3} $$
 
 ### Paroi Ouest
 
-$$\phi (x=0,y)=1-y \quad \Rightarrow \quad \phi_{0,j} =1-y_j$$
+$$\phi (x=0,y)=1-y \quad \Rightarrow \quad \phi_{0, j} =1-y_j$$
 
 ### Paroi Est
 
-Pour la même raison que pour la paroie sud, on calcul la dérivé partiel à la frontière $x=L$ avec un schéma forward d'ordre 2, ce qui donne:
+De la même manière que la paroi sud, la dérivée est prise à la frontière $x=L$ avec un schéma forward d'ordre 2:
 
 
 $$\frac{\partial \phi}{\partial x} \vert_{x=L}=\frac{3\phi_{N,j}-4\phi_{N-1,j}+\phi_{N-2,j}}{2\Delta x}=0 \quad \Rightarrow \quad 3\phi_{N,j}-4\phi_{N-1,j}+\phi_{N-2,j} =0$$
 
-D'où: $$  \phi_{N,j}=\frac{4\phi_{N-1,j}-\phi_{N-2,j}}{3} $$
+On obtient alors $\phi$ à la frontière: $$  \phi_{N,j}=\frac{4\phi_{N-1,j}-\phi_{N-2,j}}{3} $$
+
+```python
+def apply_boundary_conditions(self):
+        # MUR SUD (y=0, j=0) -> NEUMANN (Dérivée nulle en y)
+        # Formule ordre 2 : phi_0 = (4*phi_1 - phi_2) / 3
+        # On modifie la ligne du bas (j=0) en utilisant les lignes j=1 et j=2
+        self.phi[:, 0] = (4.0 * self.phi[:, 1] - 1.0 * self.phi[:, 2]) / 3.0
+
+        # MUR EST (x=Lx, i=-1) -> NEUMANN (Dérivée nulle en x)
+        # Formule ordre 2 : phi_N = (4*phi_N-1 - phi_N-2) / 3
+        # On modifie la colonne de droite (i=-1) en utilisant i=-2 et i=-3
+        self.phi[-1, :] = (4.0 * self.phi[-2, :] - 1.0 * self.phi[-3, :]) / 3.0
+
+        # MUR OUEST (x=0, i=0) -> DIRICHLET
+        # Condition : phi = 1 - y
+        # On applique sur toute la colonne de gauche
+        self.phi[0, :] = 1.0 - self.y
+
+        # MUR NORD (y=Ly, j=-1) -> DIRICHLET
+        # Condition : phi = 0
+        # On applique sur toute la ligne du haut
+        self.phi[:, -1] = 0.0
+```
+
 
 
 ## Algorithme explicite et implicite
@@ -126,30 +150,13 @@ for n in range(n_steps):
 
 ```
 
-```python
-def apply_boundary_conditions(self):
-        # MUR SUD (y=0, j=0) -> NEUMANN (Dérivée nulle en y)
-        # Formule ordre 2 : phi_0 = (4*phi_1 - phi_2) / 3
-        # On modifie la ligne du bas (j=0) en utilisant les lignes j=1 et j=2
-        self.phi[:, 0] = (4.0 * self.phi[:, 1] - 1.0 * self.phi[:, 2]) / 3.0
 
-        # MUR EST (x=Lx, i=-1) -> NEUMANN (Dérivée nulle en x)
-        # Formule ordre 2 : phi_N = (4*phi_N-1 - phi_N-2) / 3
-        # On modifie la colonne de droite (i=-1) en utilisant i=-2 et i=-3
-        self.phi[-1, :] = (4.0 * self.phi[-2, :] - 1.0 * self.phi[-3, :]) / 3.0
 
-        # MUR OUEST (x=0, i=0) -> DIRICHLET
-        # Condition : phi = 1 - y
-        # On applique sur toute la colonne de gauche
-        self.phi[0, :] = 1.0 - self.y
 
-        # MUR NORD (y=Ly, j=-1) -> DIRICHLET
-        # Condition : phi = 0
-        # On applique sur toute la ligne du haut
-        self.phi[:, -1] = 0.0
-```
 
-## Méthode implicite
+
+
+### Méthode implicite
 Le méthode implicite est décrite de la manière suivante: 
 
 $$\phi^{n+1} = \phi^n + \Delta t \cdot R (\phi^{n+1})$$
@@ -195,3 +202,43 @@ def solve_implicit(self, dt, t_end, plot_every=5):
 
         return self.phi
 ```
+
+
+## Implémentation des schémas
+
+
+## Évolution spatio-temporelle
+
+
+## Flux de température
+Le flux de température intégré le long du mur ***Ouest*** est décrit selon l'équation suivante:
+
+$$-\Gamma \int_{y=0}^{y=1} \left(\frac{\partial \phi}{\partial x}\right)_{x=0} dy = f(t)$$
+
+L'intégration est faite via la méthode `get_temperature_flux()` qui utilise les solutions stockées dans `self.phi_solution_time=` et les temps `self.time_steps`
+
+La dérivée $\frac{\partial \phi}{\partial x}$ est faite en en utilisant la différence finie de 2e ordre *backward*
+
+$$\frac{\partial\phi}{\partial x} \approx \frac{3\phi_i - 4\phi_{i-1} - \phi_{i-2}}{2\Delta x}$$
+
+```python
+def get_temperature_flux(self):
+        dx = self.dx
+        gamma = self.gamma
+        x_i = 0
+        f_t = []
+
+        for i in range(len(self.time_steps)):
+            phi = self.phi_solution_time[i]
+
+            # Dérivée 2e ordre backward
+            dphi_dx_ti = (-3 * phi[x_i,:] + 4 * phi[x_i+1,:] - phi[x_i+2,:]) / (2*dx)
+            # Intégrale le long de y
+            integral_y = np.trapz(dphi_dx_ti, self.y)
+            f_t.append(-gamma * integral_y)
+
+        return f_t
+```
+<div align='center'>
+<img src='./images/fluxThermique_dt=0.000475.png' width=500px>
+</div>

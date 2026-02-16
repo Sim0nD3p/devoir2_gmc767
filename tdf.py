@@ -37,6 +37,8 @@ class FiniteDifferenceMethod:
         
         self.n_total = self.nx * self.ny
 
+        plt.ion()
+
     def get_index(self, i, j):
         return i * self.ny + j
     
@@ -193,23 +195,13 @@ class FiniteDifferenceMethod:
             # C'est ici qu'on "écrase" les valeurs fausses aux bords
             self.apply_boundary_conditions()
 
-            if n % 10 == 0:
-                print(f"Pas de temps {n}/{n_steps} complété.")
-        
-            if n % 10 == 0:
-                # IMPORTANT : .copy() pour capturer l'état à l'instant T
-                self.phi_solution_time.append(self.phi.copy())
-                self.time_steps.append(n * dt)
-                if n % 100 == 0:
-                    print(f"Pas de temps {n}/{n_steps} complété.")
             
             self.phi_solution_time.append(self.phi.copy())
-            self.time_steps.append(n_steps * dt)
+            self.time_steps.append(n * dt)
             if plot_every != False:
                 if n % plot_every == 0:
                     self.update_live_plot(n, n * dt)
 
-        plt.ioff() # Désactive le mode interactif à la fin
         plt.show() # Garde la fenêtre ouverte    
         print("Calcul terminé.")
         return self.phi
@@ -257,32 +249,65 @@ class FiniteDifferenceMethod:
             # self.phi.flat[:] doesnt copy phi, modify a view of the original table
             self.phi.flat[:] = phi_new
 
-            if n % 10 == 0:
-                print(f"Pas de temps {n}/{n_steps} complété.")
-        
-            if n % 10 == 0:
-                # IMPORTANT : .copy() pour capturer l'état à l'instant T
-                #self.phi_solution_time.append(self.phi.copy())
-                self.time_steps.append(n * dt)
-                if n % 100 == 0:
-                    print(f"Pas de temps {n}/{n_steps} complété.")
             
             self.phi_solution_time.append(self.phi.copy())
-            self.time_steps.append(n_steps * dt)
+            self.time_steps.append(n * dt)
             if plot_every != False:
                 if n % plot_every == 0:
                     self.update_live_plot(n, n * dt)
             
-        plt.ioff() # Désactive le mode interactif à la fin
         plt.show() # Garde la fenêtre ouverte
 
 
         return self.phi
     
-    def get_temperature_flux(self):
-        for phi in self.phi_solution_time:
-            print('fds')
-            #integrer phi[0, :]
+    def get_temperature_flux(self, plot=True):
+        dx = self.dx
+        gamma = self.gamma
+        x_i = 0
+        f_t = []
+
+        for i in range(len(self.time_steps)):
+            phi = self.phi_solution_time[i]
+
+            # Dérivée 2e ordre backward
+            dphi_dx_ti = (-3 * phi[x_i,:] + 4 * phi[x_i+1,:] - phi[x_i+2,:]) / (2*dx)
+            # Intégrale le long de y
+            integral_y = np.trapz(dphi_dx_ti, self.y)
+            f_t.append(-gamma * integral_y)
+
+        
+        if plot == True:
+            # 1. Création de la figure avec un style épuré
+            plt.style.use('seaborn-v0_8-muted') # Style doux et pro
+            fig, ax = plt.subplots(figsize=(8, 5))
+
+            # 2. Le tracé avec des marqueurs stylisés
+            ax.plot(self.time_steps, f_t, 
+                    color='#4C72B0',           # Bleu acier élégant
+                    linewidth=2,               # Ligne plus épaisse
+                    marker='o',                # Cercles au lieu d'étoiles
+                    markersize=4,              # Taille discrète
+                    markerfacecolor='white',   # Coeur blanc pour un look "hollow"
+                    markeredgewidth=1.5,
+                    label='Flux total $f(t)$')
+
+            # 3. Ombrage sous la courbe (le petit plus "cute")
+            ax.fill_between(self.time_steps, f_t, color='#4C72B0', alpha=0.1)
+
+            # 4. Habillage (Labels en LaTeX)
+            ax.set_title(f'Évolution temporelle du flux thermique total $\Delta t$ = {self.dt}', 
+                         fontsize=14, pad=20)
+            ax.set_xlabel(r'Temps $t$ [s]', fontsize=12)
+            ax.set_ylabel(r'Flux total [W]', fontsize=12)
+
+            # 5. Grille et Bordures (Spines)
+            ax.grid(True, linestyle='--', alpha=0.6)
+            ax.spines['top'].set_visible(False)    # On enlève le cadre du haut
+            ax.spines['right'].set_visible(False)  # On enlève le cadre de droite
+
+        return f_t
+
 
     def replace_rows_A_matrix(self, A):
         print("Application du Row Replacement dans la matrice A...")
@@ -386,6 +411,7 @@ class FiniteDifferenceMethod:
         # On traite les événements GUI (bouger la fenêtre, redimensionner) 
         # pendant un temps très court
         self.fig.canvas.flush_events()
+        plt.pause(1e-9) # Micro-pause pour laisser le temps au processeur de dessiner
 
     def animate(self, filename='evolution.gif'):
         # 1. Vérification de sécurité
@@ -470,12 +496,15 @@ class FiniteDifferenceMethod:
 
 
 
-solver = FiniteDifferenceMethod(Lx=1, Ly=1, nx=200, ny=200, rho=1.2, gamma=0.1)
-solver.t_end = 0.05
-solver.dt = 0.001
+solver = FiniteDifferenceMethod(Lx=1, Ly=1, nx=51, ny=51, rho=1.2, gamma=0.1)
+solver.t_end = 0.12
+solver.dt = 0.000505
 
-c = solver.solve_implicit(plot_every=5)
-#c = solver.solve_explicit(plot_every=5)
+#c = solver.solve_implicit(plot_every=5)
+c = solver.solve_explicit(plot_every=5)
+solver.get_temperature_flux(plot=True)
 #c = solver.solve_steady_state()
 #solver.plot_fig(save_plot=True)
-solver.animate()
+#solver.animate()
+plt.ioff()      # Désactive le mode interactif
+plt.show()      # Devient bloquant ici, empêchant le script de se fermer
