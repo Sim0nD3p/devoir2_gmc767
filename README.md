@@ -43,6 +43,7 @@ modification
 
 
 ### Terme convectif
+##test
 $$C=\vec{U}\cdot\nabla\phi = u \frac{\partial \phi}{\partial x} + v \frac{\partial \phi}{\partial y}$$
 
 En prenant une dimension, on discrétise ainsi: 
