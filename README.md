@@ -244,3 +244,39 @@ def get_temperature_flux(self):
 <div align='center'>
 <img src='./images/fluxThermique_dt=0.000475.png' width=500px>
 </div>
+
+### Flux de température à différents dt, méthode explicite
+
+<div align="center">
+
+### Flux de température à très petits $\Delta t$ (Détail haute résolution)
+
+| Pas de temps ($\Delta t$) [s] | Flux thermique total à t=0.12 s [W/m] |
+| :--------------------------: | :-------------------------------: |
+|          0.0004750           |            0.41695738             |
+|          0.0005050           |            0.41783299             |
+|          0.0005400           |            1.87562987             |
+
+</div>
+
+<div align='center' width=400px>
+<img src='./images/fluxThermique_dt-multiple_explicit.png'>
+</div>
+
+### Flux de température à différents dt, méthode implicite
+<div align="center">
+
+
+| Pas de temps ($\Delta t$) [s] | Flux thermique total à t=0.12 s [W/m] |
+| :--------------------------: | :-------------------------------: |
+|           0.01200            |            0.31485209             |
+|           0.00600            |            0.30916218             |
+|           0.00300            |            0.30643688             |
+|           0.00150            |            0.30510264             |
+|           0.00075            |            0.30444244             |
+
+</div>
+
+<div align='center' width=400px>
+<img src='./images/fluxThermique_dt-multiple_implicit.png'>
+</div>
