@@ -263,6 +263,24 @@ def get_temperature_flux(self):
 <img src='./images/fluxThermique_dt-multiple_explicit.png'>
 </div>
 
+### Analyse
+
+Pour schéma Euler explicite, on constate que la solution est stable pour $\Delta t=0.000475 \,s \quad \text{et} \quad \Delta t=0.000505 \,s \quad\text{mais diverge pour } \quad \Delta t= 0.000540\,s.$
+
+La CFL pour Euler explicit est definie de la façon suivante: 
+
+- Advection : $\sigma_c=\frac{c\Delta t}{\Delta x} \leq 1 \Rightarrow \Delta t \leq \frac{\Delta t}{c} $
+
+- Diffusion : $\sigma_d=\frac{\Gamma \Delta t}{\rho \Delta x^2} \leq \frac{1}{4} \Rightarrow \Delta t \leq \frac{\rho \Delta x^2}{4\Gamma} $
+
+Donc $\Delta t\leq min\left(\frac{\Delta x}{u},\frac{\rho \Delta x^2}{4 \Gamma }\right) $
+
+$c=\sqrt{1^2+1^2}=\sqrt{2} \quad \text{d'où }\quad \Delta t \leq 0,000469\,s$
+
+On s’attendrait donc à obtenir une solution divergente pour $\Delta t = 0.000505\,s$, ce qui n’est pourtant pas observé numériquement. Cette différence s’explique par le fait que l’analyse de Von Neumann suppose un domaine infini (et généralement périodique), alors que notre domaine de calcul est fini. Cette hypothèse théorique modifie légèrement la limite de stabilité par rapport au cas réel discret étudié.
+
+
+
 ### Flux de température à différents dt, méthode implicite
 <div align="center">
 
@@ -280,3 +298,5 @@ def get_temperature_flux(self):
 <div align='center' width=400px>
 <img src='./images/fluxThermique_dt-multiple_implicit.png'>
 </div>
+
+
