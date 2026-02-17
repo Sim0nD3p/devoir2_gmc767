@@ -300,3 +300,7 @@ On s’attendrait donc à obtenir une solution divergente pour $\Delta t = 0.000
 </div>
 
 
+### Analyse
+
+
+En schéma implicite, il n’y a pas de limite de $\Delta t$ car chaque pas de temps résout un système prenant en compte l’ensemble du domaine, ce qui contrôle directement les modes instables et assure la stabilité, même pour des pas de temps très grands.
