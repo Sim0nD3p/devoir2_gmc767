@@ -39,6 +39,12 @@ class FiniteDifferenceMethod:
 
         plt.ion()
 
+
+    def clear_solution(self):
+        self.phi_solution_time = []
+        self.time_steps = []
+        self.phi = np.zeros((self.nx, self.ny))
+
     def get_index(self, i, j):
         return i * self.ny + j
     
@@ -305,8 +311,32 @@ class FiniteDifferenceMethod:
             ax.grid(True, linestyle='--', alpha=0.6)
             ax.spines['top'].set_visible(False)    # On enlève le cadre du haut
             ax.spines['right'].set_visible(False)  # On enlève le cadre de droite
-
+        
+        print(f'Temparature flux is {f_t[-1]}')
         return f_t
+    
+    def plot_multiple(self, xs, ys, labels, title, x_label, y_label):
+        fig, ax = plt.subplots(figsize=(8, 5))
+
+        for i in range(len(xs)):
+            ax.plot(xs[i], ys[i], 
+                    #color="#0565FF",           # Bleu acier élégant
+                    linewidth=1,               # Ligne plus épaisse
+                    marker='.',                # Cercles au lieu d'étoiles
+                    markersize=1,              # Taille discrète
+                    markerfacecolor='white',   # Coeur blanc pour un look "hollow"
+                    #markeredgewidth=1.5,
+
+                    label=labels[i])
+
+        ax.set_title(title, fontsize=14, pad=20)
+        
+        ax.set_xlabel(x_label, fontsize=12)
+        ax.set_ylabel(y_label, fontsize=12)
+        ax.grid(True, linestyle='--', alpha=0.6)
+        plt.legend()
+        plt.tight_layout()
+
 
 
     def replace_rows_A_matrix(self, A):
@@ -496,13 +526,73 @@ class FiniteDifferenceMethod:
 
 
 
-solver = FiniteDifferenceMethod(Lx=1, Ly=1, nx=51, ny=51, rho=1.2, gamma=0.1)
+solver = FiniteDifferenceMethod(Lx=1, Ly=1, nx=80, ny=80, rho=1.2, gamma=0.1)
 solver.t_end = 0.12
 solver.dt = 0.000505
 
 #c = solver.solve_implicit(plot_every=5)
-c = solver.solve_explicit(plot_every=5)
-solver.get_temperature_flux(plot=True)
+
+def multiple_explicit():
+    xs = []
+    ys = []
+    labels = []
+    title = 'Flux de température pour différent $\Delta t$'
+    xlabel = 'Temps [s]'
+    ylabel = 'Flux de température [W]'
+    fluxes = []
+
+    dts = [0.000475, 0.000505, 0.000540]
+    for dt in dts:
+        string = f'$\Delta t$ = {dt} s'
+        labels.append(string)
+        solver.dt = dt
+        c = solver.solve_explicit(plot_every=False)
+        f_t = solver.get_temperature_flux(plot=False)
+        print(f'Flux de température $\Delta t$ = {dt} s, -> {f_t[-1]} W')
+        fluxes.append(f_t[-1])
+        ys.append(f_t)
+        xs.append(solver.time_steps)
+
+        solver.clear_solution()
+
+
+    solver.plot_multiple(xs, ys, labels, title, xlabel, ylabel)
+
+    print(f'dt = {dts}')
+    print(f'flux = {fluxes}')
+
+
+def multiple_implicit():
+    xs = []
+    ys = []
+    labels = []
+    title = 'Flux de température pour différent $\Delta t$'
+    xlabel = 'Temps [s]'
+    ylabel = 'Flux de température [W]'
+    fluxes = []
+
+    dts = [0.012, 0.006, 0.003, 0.0015, 0.00075]
+    for dt in dts:
+        string = f'$\Delta t$ = {dt} s'
+        labels.append(string)
+        solver.dt = dt
+        c = solver.solve_implicit(plot_every=False)
+        f_t = solver.get_temperature_flux(plot=False)
+        print(f'Flux de température $\Delta t$ = {dt} s, -> {f_t[-1]} W')
+        fluxes.append(f_t[-1])
+        ys.append(f_t)
+        xs.append(solver.time_steps)
+
+        solver.clear_solution()
+
+
+    solver.plot_multiple(xs, ys, labels, title, xlabel, ylabel)
+
+    print(f'dt = {dts}')
+    print(f'flux = {fluxes}')
+
+#multiple_implicit()
+multiple_explicit()
 #c = solver.solve_steady_state()
 #solver.plot_fig(save_plot=True)
 #solver.animate()

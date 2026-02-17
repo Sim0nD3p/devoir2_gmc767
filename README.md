@@ -92,7 +92,9 @@ De la même manière que la paroi sud, la dérivée est prise à la frontière $
 
 $$\frac{\partial \phi}{\partial x} \vert_{x=L}=\frac{3\phi_{N,j}-4\phi_{N-1,j}+\phi_{N-2,j}}{2\Delta x}=0 \quad \Rightarrow \quad 3\phi_{N,j}-4\phi_{N-1,j}+\phi_{N-2,j} =0$$
 
-On obtient alors $\phi$ à la frontière: $$  \phi_{N,j}=\frac{4\phi_{N-1,j}-\phi_{N-2,j}}{3} $$
+On obtient alors $\phi$ à la frontière:
+
+$$\phi_{N,j}=\frac{4\phi_{N-1,j}-\phi_{N-2,j}}{3}$$
 
 ```python
 def apply_boundary_conditions(self):
@@ -161,7 +163,7 @@ Le méthode implicite est décrite de la manière suivante:
 
 $$\phi^{n+1} = \phi^n + \Delta t \cdot R (\phi^{n+1})$$
 Comme précédemment,
-dsadsadsa
+
 $$R(\phi^{n+1})=(D-C) \cdot \phi^{n+1}= K \cdot \phi^{n+1}$$
 
 On obtient alors
