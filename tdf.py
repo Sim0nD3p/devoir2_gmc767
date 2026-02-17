@@ -531,6 +531,8 @@ solver.t_end = 0.12
 solver.dt = 0.000505
 
 #c = solver.solve_implicit(plot_every=5)
+c = solver.solve_explicit(plot_every=5)
+solver.get_temperature_flux()
 
 def multiple_explicit():
     xs = []
@@ -592,7 +594,7 @@ def multiple_implicit():
     print(f'flux = {fluxes}')
 
 #multiple_implicit()
-multiple_explicit()
+#multiple_explicit()
 #c = solver.solve_steady_state()
 #solver.plot_fig(save_plot=True)
 #solver.animate()
