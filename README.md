@@ -1,4 +1,6 @@
 # Devoir #2 GMC767
+** Voir dans GitHub pour que ce soit plus agréable**
+<href=https://github.com/Sim0nD3p/devoir2_gmc767>
 
 Le code pour le devoir 2 est fait sous forme de classe Python contenant les différents solveurs discrétisé en différence centrée d'ordre 2 (CD2).
 
