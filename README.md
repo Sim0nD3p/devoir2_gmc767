@@ -204,10 +204,34 @@ def solve_implicit(self, dt, t_end, plot_every=5):
 
 
 ## Implémentation des schémas
+#### Méthode implicite
+<table align='center'>
+  <tr align='center' cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: none;">
+    <td style="padding: 0; margin: 0;"><img src="./images/implicit_dt=0.012.png"  width="10000" /></td>
+    <td style="padding: 0; margin: 0;"><img src="./images/implicit_dt=0.006.png" alt="2" width="10000" /></td>
+    <td style="padding: 0; margin: 0;"><img src="./images/implicit_dt=0.003.png" alt="4" width="10000" /></td>
+  </tr>
+  <tr align='center' cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: none;">
+    <td style="padding: 0; margin: 0;"><img src="./images/implicit_dt=0.0015.png"  width="10000" /></td>
+    <td style="padding: 0; margin: 0;"><img src="./images/implicit_dt=0.00075.png" alt="2" width="10000" /></td>
+  </tr>
+  
+</table>
+
+#### Méthode explicite
+Pour la méthode epxlicite, on peut voir que le résultat pour $\Delta t$=0.000505 s est inconcluant, cela est causé par un manque de convergence de la solution, tel qu'expliqué dans les prochaines sections.
+<table align='center'>
+  <tr align='center' cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: none;">
+  <tr align='center' cellspacing="0" cellpadding="0" style="border-collapse: collapse; border: none;">
+    <td style="padding: 0; margin: 0;"><img src="./images/explicit_dt=0.000475.png"  width="10000" /></td>
+    <td style="padding: 0; margin: 0;"><img src="./images/explicit_dt=0.000505.png" alt="2" width="10000" /></td>
+  </tr>
+  
+</table>
 
 
 ## Évolution spatio-temporelle
-<img src='./images/evolution.gif'></img>
+<img src='./images/evolutionTemporelle.gif'></imgx>
 
 
 ## Flux de température

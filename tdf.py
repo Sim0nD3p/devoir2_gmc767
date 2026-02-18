@@ -495,8 +495,9 @@ class FiniteDifferenceMethod:
         plt.close(fig) # Ferme la figure pour libérer la mémoire
         print("Animation terminée.")
 
-    def plot_fig(self, save_plot:False):
+    def plot_fig(self, save_plot:False, filename='file'):
         fig, ax = plt.subplots(figsize=(7, 6))
+        filename = filename + '.png'
 
 
 
@@ -507,8 +508,8 @@ class FiniteDifferenceMethod:
         cbar.set_label(r'Scalaire $\phi$', fontsize=12)
         if self.time_scheme != 'steady-state':
 
-            title_str = (f"Champ de transport $\phi$ à $t={solver.time_steps[-1]:.3f}$ s\n"
-                f"($\Delta t={solver.dt}$, Schéma: {solver.time_scheme})")
+            title_str = (f"Champ de transport $\phi$ à $t={solver.time_steps[-1]:.2f}$ s\n"
+             f"($\Delta t={solver.dt:.6f}$, Schéma: {solver.time_scheme})")
         else:
             title_str = (f"Champ de transport $\phi$ Schéma: {solver.time_scheme})")
 
@@ -516,6 +517,11 @@ class FiniteDifferenceMethod:
         ax.set_aspect('equal') # Crucial pour que le domaine ne soit pas déformé
         ax.set_xlabel('Position x [m]')
         ax.set_ylabel('Position y [m]')
+
+        if save_plot:
+            # dpi=300 ensures high resolution, bbox_inches='tight' fits the labels
+            plt.savefig(filename, dpi=300, bbox_inches='tight')
+            print(f"Graphique sauvegardé : {filename}")
 
         plt.show()
 
@@ -529,11 +535,13 @@ class FiniteDifferenceMethod:
 
 
 solver = FiniteDifferenceMethod(Lx=1, Ly=1, nx=80, ny=80, rho=1.2, gamma=0.1)
-solver.t_end = 4
-solver.dt = 0.000475
+solver.t_end = 0.12
+solver.dt = 0.000505
 
-#c = solver.solve_implicit(plot_every=5)
-c = solver.solve_explicit(plot_every=False)
+c = solver.solve_implicit(plot_every=False)
+#c = solver.solve_explicit(plot_every=False)
+
+#solver.plot_fig(save_plot=True)
 #solver.get_temperature_flux()
 
 def multiple_explicit():
@@ -581,24 +589,25 @@ def multiple_implicit():
         labels.append(string)
         solver.dt = dt
         c = solver.solve_implicit(plot_every=False)
-        f_t = solver.get_temperature_flux(plot=False)
-        print(f'Flux de température $\Delta t$ = {dt} s, -> {f_t[-1]} W')
-        fluxes.append(f_t[-1])
-        ys.append(f_t)
-        xs.append(solver.time_steps)
+        #f_t = solver.get_temperature_flux(plot=False)
+        #print(f'Flux de température $\Delta t$ = {dt} s, -> {f_t[-1]} W')
+        #fluxes.append(f_t[-1])
+        #ys.append(f_t)
+        #xs.append(solver.time_steps)
 
+        solver.plot_fig(True, str(dt))
         solver.clear_solution()
 
 
-    solver.plot_multiple(xs, ys, labels, title, xlabel, ylabel)
+    #lver.plot_multiple(xs, ys, labels, title, xlabel, ylabel)
 
     print(f'dt = {dts}')
     print(f'flux = {fluxes}')
 
-#multiple_implicit()
+multiple_implicit()
 #multiple_explicit()
 #c = solver.solve_steady_state()
 #solver.plot_fig(save_plot=True)
-solver.animate()
+#solver.animate()
 plt.ioff()      # Désactive le mode interactif
 plt.show()      # Devient bloquant ici, empêchant le script de se fermer
