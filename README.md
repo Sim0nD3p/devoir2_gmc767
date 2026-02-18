@@ -30,12 +30,9 @@ La paroi est est une frontière de type ***outlet***. Donc une condition de type
 $$\frac{\partial \phi}{\partial x} = 0$$
 
 
-modification
-
-
 
 <div align=center>
-    <h3>Domaine de calcul</h3>
+    <h3>Domaine de calcul et conditions frontières</h3>
     <img src=./images/image_domaineInitial.png width=400px>
 </div>
 
@@ -48,20 +45,20 @@ $$C=\vec{U}\cdot\nabla\phi = u \frac{\partial \phi}{\partial x} + v \frac{\parti
 En prenant une dimension, on discrétise ainsi: 
 $$\frac{\partial\phi}{\partial x}=\frac{\phi_{i+1}-\phi_{i-1}}{2\Delta x}$$
 
-Pour simplifier le code, la discrétisation est traitée ainsi:
+Pour simplifier le code, la discrétisation est traitée ainsi (pour une dimension):
 
-$$\frac{u}{2\Delta x}(\phi_{i+1} - \phi_{i-1})$$
+$$C_x = \frac{u}{2\Delta x}(\phi_{i+1} - \phi_{i-1})$$
 
 ### Terme diffusif
 $$ D=\frac{\Gamma }{\rho}(\nabla^2 \phi)= \frac{\Gamma }{\rho} \left( \frac{\partial ^2\phi}{\partial x^2} + \frac{\partial ^2\phi}{\partial y^2} \right) $$
 
 En discrétisant pour x, on obtient: 
 
-$$\frac{\partial ^2\phi}{\partial x^2}=\frac{\phi_{i+1}-2.\phi_i+\phi_{i-1}}{2\Delta x} $$
+$$\frac{\partial ^2\phi}{\partial x^2}=\frac{\phi_{i+1}-2\phi_i+\phi_{i-1}}{2\Delta x} $$
 
-Ce qui done pour le code:
+Pour simplifier le code, la discrétisation est traitée ainsi (pour une dimension):
 
-$$\frac{\Gamma }{\rho \cdot 2\Delta x}(\phi_{i+1}-2\phi_i+\phi_{i-1}) $$
+$$D_x=\frac{\Gamma }{\rho \cdot 2\Delta x}(\phi_{i+1}-2\phi_i+\phi_{i-1}) $$
 
 ## Terme résiduel
 $$R(\phi^n) = \frac{\partial\phi^n}{\partial t} = -\vec{U}\cdot\nabla\phi^n + \frac{\Gamma}{\rho}(\nabla^2\phi^n)$$
@@ -210,6 +207,7 @@ def solve_implicit(self, dt, t_end, plot_every=5):
 
 
 ## Évolution spatio-temporelle
+<img src='./images/evolution.gif'></img>
 
 
 ## Flux de température
@@ -249,7 +247,7 @@ def get_temperature_flux(self):
 
 <div align="center">
 
-### Flux de température à très petits $\Delta t$ (Détail haute résolution)
+#### **Flux de température à très petits $\Delta t$ (Détail haute résolution)**
 
 | Pas de temps ($\Delta t$) [s] | Flux thermique total à t=0.12 s [W/m] |
 | :--------------------------: | :-------------------------------: |
@@ -300,7 +298,3 @@ On s’attendrait donc à obtenir une solution divergente pour $\Delta t = 0.000
 </div>
 
 
-### Analyse
-
-
-En schéma implicite, il n’y a pas de limite de $\Delta t$ car chaque pas de temps résout un système prenant en compte l’ensemble du domaine, ce qui contrôle directement les modes instables et assure la stabilité, même pour des pas de temps très grands.

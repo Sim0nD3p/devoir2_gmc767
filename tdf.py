@@ -194,7 +194,6 @@ class FiniteDifferenceMethod:
             
             # B. Mise à jour de l'état (Euler)
             # phi(t+1) = phi(t) + dt * rhs
-            self.phi_solution_time.append(self.phi.copy())
             self.phi += dt * rhs.reshape((self.nx, self.ny)) # reshape suit indexing='ij' par défaut
 
             # C. APPLICATION DES CONDITIONS LIMITES
@@ -202,8 +201,11 @@ class FiniteDifferenceMethod:
             self.apply_boundary_conditions()
 
             
-            self.phi_solution_time.append(self.phi.copy())
-            self.time_steps.append(n * dt)
+            #self.phi_solution_time.append(self.phi.copy())
+            if n % 50 == 0:
+
+                self.phi_solution_time.append(self.phi.copy())
+                self.time_steps.append(n * dt)
             if plot_every != False:
                 if n % plot_every == 0:
                     self.update_live_plot(n, n * dt)
@@ -452,7 +454,7 @@ class FiniteDifferenceMethod:
         fig, ax = plt.subplots(figsize=(7, 6))
         
         # On définit les niveaux de contours une seule fois pour la cohérence
-        contour_levels = np.linspace(0, 1, 21)
+        contour_levels = np.linspace(0, 1, 256)
         
         # 2. Initialisation du premier cadre
         cont = ax.contourf(self.X, self.Y, self.phi_solution_time[0], levels=contour_levels, cmap='turbo')
@@ -527,12 +529,12 @@ class FiniteDifferenceMethod:
 
 
 solver = FiniteDifferenceMethod(Lx=1, Ly=1, nx=80, ny=80, rho=1.2, gamma=0.1)
-solver.t_end = 0.12
-solver.dt = 0.000505
+solver.t_end = 4
+solver.dt = 0.000475
 
 #c = solver.solve_implicit(plot_every=5)
-c = solver.solve_explicit(plot_every=5)
-solver.get_temperature_flux()
+c = solver.solve_explicit(plot_every=False)
+#solver.get_temperature_flux()
 
 def multiple_explicit():
     xs = []
@@ -597,6 +599,6 @@ def multiple_implicit():
 #multiple_explicit()
 #c = solver.solve_steady_state()
 #solver.plot_fig(save_plot=True)
-#solver.animate()
+solver.animate()
 plt.ioff()      # Désactive le mode interactif
 plt.show()      # Devient bloquant ici, empêchant le script de se fermer
