@@ -231,7 +231,9 @@ Pour la méthode epxlicite, on peut voir que le résultat pour $\Delta t$=0.0005
 
 
 ## Évolution spatio-temporelle
-<img src='./images/evolutionTemporelle.gif'></imgx>
+<div align='center'>
+    <img src='./images/evolutionTemporelle.gif'></imgx>
+</div>
 
 
 ## Flux de température
@@ -271,7 +273,6 @@ def get_temperature_flux(self):
 
 <div align="center">
 
-#### **Flux de température à très petits $\Delta t$ (Détail haute résolution)**
 
 | Pas de temps ($\Delta t$) [s] | Flux thermique total à t=0.12 s [W/m] |
 | :--------------------------: | :-------------------------------: |
@@ -287,23 +288,42 @@ def get_temperature_flux(self):
 
 ### Analyse
 
-Pour schéma Euler explicite, on constate que la solution est stable pour $\Delta t=0.000475 \,s \quad \text{et} \quad \Delta t=0.000505 \,s \quad\text{mais diverge pour } \quad \Delta t= 0.000540\,s.$
+Pour schéma Euler explicite, lorsqu'on regarde le flux de température pour $\Delta t$=0.000505 s, on constate que celui-ci est stable, même si le champ $\phi$ est instable tel que montré précédemment. En augmentant $\Delta t$ jusqu'à environ 0.000540 s, on commence à voir que le flux de température diverge. L'hypothèse étant que puisque le gradient est pris près de l'endroit où la frontière est imposée, celui-ci est encore près de la valeur obtenue avant que la solution diverge.
+
+Le champ $\phi$, néanmoins, est stable pour $\Delta t<0.000475$ s et commence à diverger vers $\Delta t=0.000505$ ,s avec une divergence du flux de température à t=0.12s  lorsque $\Delta t= 0.000540$ s
 
 La CFL pour Euler explicit est definie de la façon suivante: 
 
-- Advection : $\sigma_c=\frac{c\Delta t}{\Delta x} \leq 1 \Rightarrow \Delta t \leq \frac{\Delta t}{c} $
+#### Advection
 
-- Diffusion : $\sigma_d=\frac{\Gamma \Delta t}{\rho \Delta x^2} \leq \frac{1}{4} \Rightarrow \Delta t \leq \frac{\rho \Delta x^2}{4\Gamma} $
+$$\sigma_c=\frac{c \Delta t}{\Delta x} \le 1$$
 
-Donc $\Delta t\leq min\left(\frac{\Delta x}{u},\frac{\rho \Delta x^2}{4 \Gamma }\right) $
 
-$c=\sqrt{1^2+1^2}=\sqrt{2} \quad \text{d'où }\quad \Delta t_{théorique} \leq 0,000469\,s$
+Donc, 
+$$\Delta t \leq \frac{\Delta t}{c} $$
 
-On s’attendrait donc à obtenir une solution divergente pour $\Delta t = 0.000505\,s$, ce qui n’est pourtant pas observé numériquement. Cette différence s’explique par le fait que l’analyse de Von Neumann suppose un domaine infini (et généralement périodique), alors que notre domaine de calcul est fini. Cette hypothèse théorique modifie légèrement la limite de stabilité par rapport au cas réel discret étudié.
+#### Diffusion
+$$\sigma_d=\frac{\Gamma \Delta t}{\rho \Delta x^2} \leq \frac{1}{4}$$
+Donc,
+$$\Delta t \leq \frac{\rho \Delta x^2}{4\Gamma} $$
 
+Alors, on a $\Delta t_{min}$ selon:
+
+$$\Delta t\leq min\left(\frac{\Delta x}{u},\frac{\rho \Delta x^2}{4 \Gamma }\right) $$
+
+avec la vitesse de l'écoulement
+$$c=\sqrt{1^2+1^2}=\sqrt{2}$$
+
+$$\Delta t_{théorique} \leq 0.000469 \text{ s}$$
+
+
+Cette limite est très près du $\Delta t$ auquel on commence à voir de la divergence dans la solution.
 
 
 ### Flux de température à différents dt, méthode implicite
+
+Pour la méthode implicite, il n'y a pas de critère de pas de temps à respecter. Cependant, un pas de temps plus grand signifie une perte de résolution temporelle dans la solution.
+
 <div align="center">
 
 
